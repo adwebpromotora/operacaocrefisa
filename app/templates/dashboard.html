@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="text-sm font-medium text-gray-500">Total de Leads</div>
+                <div class="mt-1 text-3xl font-semibold text-gray-900">{{ total_leads }}</div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="text-sm font-medium text-gray-500">Leads Simulados</div>
+                <div class="mt-1 text-3xl font-semibold text-gray-900">{{ total_simulados }}</div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="text-sm font-medium text-gray-500">Simulação Realizada</div>
+                <div class="mt-1 text-3xl font-semibold text-green-600">{{ total_realizada }}</div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="text-sm font-medium text-gray-500">Valor Total Simulado</div>
+                <div class="mt-1 text-3xl font-semibold text-indigo-600">{{ soma_valores }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aqui você pode adicionar gráficos depois (Chart.js ou similar) -->
+    <div class="mt-10 bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Próximos Passos</h2>
+        <ul class="space-y-2">
+            <li><a href="/simulacoes" class="text-blue-600 hover:underline">→ Iniciar Simulações</a></li>
+            <li><a href="/atendimento" class="text-blue-600 hover:underline">→ Atendimento</a></li>
+            <li><a href="/importacao" class="text-blue-600 hover:underline">→ Importar Leads</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
