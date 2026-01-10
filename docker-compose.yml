@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: operacao-crefisa-app
+    ports:
+      - "8080:80"           # ou 80:80 se quiser direto
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: operacao-crefisa-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: operacaocrefisa
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: sua_senha_forte
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
