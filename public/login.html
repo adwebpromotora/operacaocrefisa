@@ -26,7 +26,7 @@
         function login() {
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-            fetch('login.php', {
+            fetch('api/login.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, senha })
@@ -34,7 +34,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = 'index.html';
+                    window.location.href = '/';
                 } else {
                     document.getElementById('error').textContent = data.message;
                 }
