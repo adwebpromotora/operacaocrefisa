@@ -110,21 +110,42 @@
             return `R$ ${parseFloat(value).toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
         }
 
-        function updateIndicators() {
-            fetch('api.php?action=indicators')
+        function checkAuth() {
+            fetch('api/auth-check.php')
                 .then(res => res.json())
                 .then(data => {
-                    const indicatorsDiv = document.getElementById('indicators');
-                    indicatorsDiv.innerHTML = '';
-                    const totalCard = createCard('Leads Cadastrados', data.totalLeads);
-                    indicatorsDiv.appendChild(totalCard);
+                    if (!data.loggedIn) {
+                        window.location.href = '/login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '/login.html';
+                });
+        }
 
-                    const statuses = ['fazer contato', 'erro', 'simulado', 'sem interesse', 'em negociação', 'vendido'];
-                    statuses.forEach(status => {
-                        const title = `Valor Total - ${status.charAt(0).toUpperCase() + status.slice(1)}`;
-                        const card = createCard(title, formatCurrency(data[status]));
-                        indicatorsDiv.appendChild(card);
-                    });
+        function updateIndicators() {
+            fetch('api/api.php?action=indicators')
+                .then(res => {
+                    if (res.status === 401) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data) {
+                        const indicatorsDiv = document.getElementById('indicators');
+                        indicatorsDiv.innerHTML = '';
+                        const totalCard = createCard('Leads Cadastrados', data.totalLeads);
+                        indicatorsDiv.appendChild(totalCard);
+
+                        const statuses = ['fazer contato', 'erro', 'simulado', 'sem interesse', 'em negociação', 'vendido'];
+                        statuses.forEach(status => {
+                            const title = `Valor Total - ${status.charAt(0).toUpperCase() + status.slice(1)}`;
+                            const card = createCard(title, formatCurrency(data[status]));
+                            indicatorsDiv.appendChild(card);
+                        });
+                    }
                 });
         }
 
@@ -136,23 +157,31 @@
         }
 
         function renderLeads(searchTerm = '') {
-            fetch(`api.php?search=${encodeURIComponent(searchTerm)}`)
-                .then(res => res.json())
+            fetch(`api/api.php?search=${encodeURIComponent(searchTerm)}`)
+                .then(res => {
+                    if (res.status === 401) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    return res.json();
+                })
                 .then(leads => {
-                    const grid = document.getElementById('leadsGrid');
-                    grid.innerHTML = '';
-                    leads.forEach(lead => {
-                        const card = document.createElement('div');
-                        card.className = 'lead-card';
-                        card.innerHTML = `
-                            <h4>${lead.nome}</h4>
-                            <p>CPF: ${lead.cpf}</p>
-                            <p>Status: ${lead.status}</p>
-                            <p>Valor: ${formatCurrency(lead.valor_liberado)}</p>
-                        `;
-                        card.onclick = () => openModal(lead.id);
-                        grid.appendChild(card);
-                    });
+                    if (leads) {
+                        const grid = document.getElementById('leadsGrid');
+                        grid.innerHTML = '';
+                        leads.forEach(lead => {
+                            const card = document.createElement('div');
+                            card.className = 'lead-card';
+                            card.innerHTML = `
+                                <h4>${lead.nome}</h4>
+                                <p>CPF: ${lead.cpf}</p>
+                                <p>Status: ${lead.status}</p>
+                                <p>Valor: ${formatCurrency(lead.valor_liberado)}</p>
+                            `;
+                            card.onclick = () => openModal(lead.id);
+                            grid.appendChild(card);
+                        });
+                    }
                 });
         }
 
@@ -167,10 +196,16 @@
                 anotacao: document.getElementById('anotacao').value,
                 status: document.getElementById('status').value
             };
-            fetch('api.php', {
+            fetch('api/api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newLead)
+            }).then(res => {
+                if (res.status === 401) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                return res.json();
             }).then(() => {
                 clearAddForm();
                 renderLeads();
@@ -191,10 +226,15 @@
 
         function openModal(id) {
             currentLeadId = id;
-            fetch(`api.php?search=&id=${id}`) // Ajuste se necessário; mas para um lead específico, talvez adicione endpoint
-                .then(res => res.json())
-                .then(leads => {
-                    const lead = leads.find(l => l.id == id); // Como busca retorna array, encontre
+            fetch(`api/api.php?id=${id}`)
+                .then(res => {
+                    if (res.status === 401) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    return res.json();
+                })
+                .then(lead => {
                     if (lead) {
                         document.getElementById('editId').value = lead.id;
                         document.getElementById('editNome').value = lead.nome;
@@ -228,10 +268,16 @@
                 anotacao: document.getElementById('editAnotacao').value,
                 status: document.getElementById('editStatus').value
             };
-            fetch('api.php', {
+            fetch('api/api.php', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(editedLead)
+            }).then(res => {
+                if (res.status === 401) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                return res.json();
             }).then(() => {
                 closeModal();
                 renderLeads(document.getElementById('searchInput').value);
@@ -242,10 +288,16 @@
         function addComment() {
             const comment = document.getElementById('newComment').value;
             if (comment) {
-                fetch(`api.php?action=comments&lead_id=${currentLeadId}`, {
+                fetch(`api/api.php?action=comments&lead_id=${currentLeadId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ comment })
+                }).then(res => {
+                    if (res.status === 401) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    return res.json();
                 }).then(() => {
                     fetchComments(currentLeadId);
                     document.getElementById('newComment').value = '';
@@ -254,17 +306,25 @@
         }
 
         function fetchComments(leadId) {
-            fetch(`api.php?action=comments&lead_id=${leadId}`)
-                .then(res => res.json())
+            fetch(`api/api.php?action=comments&lead_id=${leadId}`)
+                .then(res => {
+                    if (res.status === 401) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    return res.json();
+                })
                 .then(comments => {
-                    const list = document.getElementById('commentsList');
-                    list.innerHTML = '';
-                    comments.forEach(comment => {
-                        const div = document.createElement('div');
-                        div.className = 'comment';
-                        div.textContent = `${new Date(comment.comment_date).toLocaleString('pt-BR')}: ${comment.comment}`;
-                        list.appendChild(div);
-                    });
+                    if (comments) {
+                        const list = document.getElementById('commentsList');
+                        list.innerHTML = '';
+                        comments.forEach(comment => {
+                            const div = document.createElement('div');
+                            div.className = 'comment';
+                            div.textContent = `${new Date(comment.comment_date).toLocaleString('pt-BR')}: ${comment.comment}`;
+                            list.appendChild(div);
+                        });
+                    }
                 });
         }
 
@@ -272,6 +332,7 @@
         document.getElementById('searchInput').addEventListener('input', (e) => renderLeads(e.target.value));
 
         // Inicialização
+        checkAuth();
         renderLeads();
         updateIndicators();
 
