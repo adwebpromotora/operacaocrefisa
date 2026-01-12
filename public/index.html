@@ -111,7 +111,7 @@
         }
 
         function checkAuth() {
-            fetch('api/auth-check.php')
+            fetch('auth-check.php')
                 .then(res => res.json())
                 .then(data => {
                     if (!data.loggedIn) {
@@ -124,7 +124,7 @@
         }
 
         function updateIndicators() {
-            fetch('api/api.php?action=indicators')
+            fetch('api.php?action=indicators')
                 .then(res => {
                     if (res.status === 401) {
                         window.location.href = '/login.html';
@@ -157,7 +157,7 @@
         }
 
         function renderLeads(searchTerm = '') {
-            fetch(`api/api.php?search=${encodeURIComponent(searchTerm)}`)
+            fetch(`api.php?search=${encodeURIComponent(searchTerm)}`)
                 .then(res => {
                     if (res.status === 401) {
                         window.location.href = '/login.html';
@@ -196,7 +196,7 @@
                 anotacao: document.getElementById('anotacao').value,
                 status: document.getElementById('status').value
             };
-            fetch('api/api.php', {
+            fetch('api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newLead)
@@ -226,7 +226,7 @@
 
         function openModal(id) {
             currentLeadId = id;
-            fetch(`api/api.php?id=${id}`)
+            fetch(`api.php?id=${id}`)
                 .then(res => {
                     if (res.status === 401) {
                         window.location.href = '/login.html';
@@ -268,7 +268,7 @@
                 anotacao: document.getElementById('editAnotacao').value,
                 status: document.getElementById('editStatus').value
             };
-            fetch('api/api.php', {
+            fetch('api.php', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(editedLead)
@@ -288,7 +288,7 @@
         function addComment() {
             const comment = document.getElementById('newComment').value;
             if (comment) {
-                fetch(`api/api.php?action=comments&lead_id=${currentLeadId}`, {
+                fetch(`api.php?action=comments&lead_id=${currentLeadId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ comment })
@@ -306,7 +306,7 @@
         }
 
         function fetchComments(leadId) {
-            fetch(`api/api.php?action=comments&lead_id=${leadId}`)
+            fetch(`api.php?action=comments&lead_id=${leadId}`)
                 .then(res => {
                     if (res.status === 401) {
                         window.location.href = '/login.html';
