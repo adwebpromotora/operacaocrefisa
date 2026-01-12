@@ -1,13 +1,14 @@
 <?php
-$host = 'sistemas_operacaocrefisa-db'; // Seu host MySQL
-$dbname = 'operacaocrefisa';
-$username = 'crefisa'; // Seu usuário MySQL
-$password = 'AdWebc@132005'; // Sua senha MySQL
+$host     = getenv('DB_HOST')     ?: 'sistemas_operacaocrefisa-db';
+$dbname   = getenv('DB_NAME')     ?: 'operacaocrefisa';
+$username = getenv('DB_USER')     ?: 'crefisa';
+$password = getenv('DB_PASSWORD') ?: 'AdWebc@132005';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Erro de conexão: " . $e->getMessage());
+    http_response_code(500);
+    die("Erro de conexão com o banco: " . $e->getMessage());
 }
 ?>
