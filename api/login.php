@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '/core/config.php';  // Ajuste o caminho se necessário (../core/config.php)
+include '../core/config.php';
 
 header('Content-Type: application/json');
 
